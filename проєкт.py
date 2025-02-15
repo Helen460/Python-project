@@ -1,44 +1,42 @@
 #Консольний застосунок "База даних магазину продуктів"
 import os
 
-#Ініціалізація списку для збереження даних про продукти
-products = []
-
-#Функція для завантаження даних з файлу
+# Функция для завантаження даних з файлу
 def load_from_file():
-    global products
+    products = []
     try:
-        #Перевірка, чи існує файл
+        # Перевірка, чи існує файл
         if os.path.exists('products.txt'):
             with open('products.txt', 'r', encoding='utf-8') as f:
                 lines = f.readlines()
                 for line in lines:
-                    #Обробка кожного рядка файлу та розділення даних на частини
+                    # Обробка кожного рядка файлу та розділення даних на частини
                     product_data = line.strip().split(', ')
-                    #Додавання продукту в список
+                    # Додавання продукту в список
                     products.append([product_data[0], product_data[1], float(product_data[2]), int(product_data[3])])
     except Exception as e:
-        #Повідомлення про помилку при завантаженні
+        # Повідомлення про помилку при завантаженні
         print("Помилка при завантаженні даних з файлу:", e)
+    return products
 
-#Функція для збереження даних у файл
-def save_to_file():
+# Функція для збереження даних у файл
+def save_to_file(products):
     try:
         with open('products.txt', 'w', encoding='utf-8') as f:
             for product in products:
-                #Запис кожного продукту у файл, розділеного комами
+                # Запис кожного продукту у файл, розділеного комами
                 f.write(', '.join(map(str, product)) + '\n')
         print("База даних збережена у файл.")
     except Exception as e:
-        #Повідомлення про помилку при збереженні
+        # Повідомлення про помилку при збереженні
         print("Помилка при збереженні даних у файл:", e)
 
-#Функція для додавання нового продукту
-def add_product():
+# Функція для додавання нового продукту
+def add_product(products):
     name = input("Введіть назву продукту: ")
     category = input("Введіть категорію продукту: ")
 
-    #Перевірка правильності введення ціни
+    # Перевірка правильності введення ціни
     while True:
         try:
             price = float(input("Введіть ціну продукту: "))
@@ -46,7 +44,7 @@ def add_product():
         except ValueError:
             print("Помилка! Ціна повинна бути числом.")
 
-    #Перевірка правильності введення кількості
+    # Перевірка правильності введення кількості
     while True:
         try:
             quantity = int(input("Введіть кількість на складі: "))
@@ -54,50 +52,51 @@ def add_product():
         except ValueError:
             print("Помилка! Кількість повинна бути цілим числом.")
     
-    #Додавання нового продукту до списку
+    # Додавання нового продукту до списку
     products.append([name, category, price, quantity])
     print("Продукт", name, "додано в базу даних.")
+    return products
 
-#Функція для перегляду всіх продуктів у зручному вигляді
-def view_products():
+# Функція для перегляду всіх продуктів у зручному вигляді
+def view_products(products):
     if len(products) == 0:
         print("База даних порожня.")
     else:
         print("\nСписок продуктів:")
-        #Форматоване виведення заголовків таблиці
+        # Форматоване виведення заголовків таблиці
         print("{:<20} {:<20} {:<10} {:<10}".format("Назва", "Категорія", "Ціна", "Кількість"))
-        print('-' * 60)
+        print('-' * 60)  # Лінія розділення
         for product in products:
-            #Форматоване виведення даних кожного продукту
+            # Форматоване виведення даних кожного продукту
             print("{:<20} {:<20} {:<10.2f} {:<10}".format(product[0], product[1], product[2], product[3]))
 
-#Функція для пошуку продукту за назвою
-def find_product():
+# Функція для пошуку продукту за назвою
+def find_product(products):
     name = input("Введіть назву продукту для пошуку: ")
     found = False
     for product in products:
         if product[0].lower() == name.lower():
             print("\nЗнайдений продукт:")
-            #Форматоване виведення заголовків таблиці
+            # Форматоване виведення заголовків таблиці
             print("{:<20} {:<20} {:<10} {:<10}".format("Назва", "Категорія", "Ціна", "Кількість"))
             print('-' * 60)  # Лінія розділення
-            #Форматоване виведення знайденого продукту
+            # Форматоване виведення знайденого продукту
             print("{:<20} {:<20} {:<10.2f} {:<10}".format(product[0], product[1], product[2], product[3]))
             found = True
             break
     if not found:
         print("Продукт", name, "не знайдено.")
 
-#Функція для видалення продукту
-def delete_product():
+# Функція для видалення продукту
+def delete_product(products):
     name = input("Введіть назву продукту для видалення: ")
-    global products
     # Видалення продукту з бази даних за назвою
     products = [product for product in products if product[0].lower() != name.lower()]
     print("Продукт", name, "видалено з бази даних.")
+    return products
 
-#Функція для оновлення даних про продукт
-def update_product():
+# Функція для оновлення даних про продукт
+def update_product(products):
     name = input("Введіть назву продукту для оновлення: ")
     for product in products:
         if product[0].lower() == name.lower():
@@ -106,7 +105,7 @@ def update_product():
             print("2. Кількість на складі")
             choice = input("Ваш вибір: ")
 
-            #Оновлення ціни
+            # Оновлення ціни
             if choice == "1":
                 while True:
                     try:
@@ -116,7 +115,7 @@ def update_product():
                         break
                     except ValueError:
                         print("Помилка! Ціна повинна бути числом.")
-            #Оновлення кількості на складі
+            # Оновлення кількості на складі
             elif choice == "2":
                 while True:
                     try:
@@ -131,9 +130,10 @@ def update_product():
             break
     else:
         print("Продукт", name, "не знайдено.")
+    return products
 
-#Головне меню програми
-def menu():
+# Головне меню програми
+def menu(products):
     while True:
         print("\nМеню:")
         print("1. Переглянути всі продукти")
@@ -146,31 +146,32 @@ def menu():
         
         choice = input("Оберіть дію: ")
 
-        #Обробка вибору користувача
+        # Обробка вибору користувача
         if choice == "1":
-            view_products()
+            view_products(products)
         elif choice == "2":
-            add_product()
+            products = add_product(products)
         elif choice == "3":
-            find_product()
+            find_product(products)
         elif choice == "4":
-            delete_product()
+            products = delete_product(products)
         elif choice == "5":
-            update_product()
+            products = update_product(products)
         elif choice == "6":
-            save_to_file()
+            save_to_file(products)
         elif choice == "7":
-            save_to_file()
+            save_to_file(products)
             print("Завершення роботи програми...")
             break
         else:
             print("Невірний вибір. Спробуйте ще раз.")
+    return products
 
-#Головна функція, що завантажує дані та викликає меню
+# Головна функція, що завантажує дані та викликає меню
 def main():
-    load_from_file()  #Завантаження даних при старті програми
-    menu()
+    products = load_from_file()  # Завантаження даних при старті програми
+    products = menu(products)
 
-#Запуск програми
+# Запуск програми
 if __name__ == "__main__":
     main()
